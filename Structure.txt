@@ -1,0 +1,44 @@
+Intro/
+└ YoutubeIntro
+└ Welcome
+└ GetInPosition
+└ CloseEyes
+└ Breathe X3
+Other/
+└ NoticeHowYouFeel
+FocusedAttention/
+(
+[
+└ CountBreaths
+└ NoticeMindHasWondered
+└ CountBreaths
+└ NoticeMindHasWondered
+└ CountBreaths
+└ NoticeMindHasWondered
+]
+[
+└ NoticeBreathsInAndOut
+└ NoticeMindHasWondered
+└ NoticeBreathsInAndOut
+└ NoticeMindHasWondered
+└ NoticeBreathsInAndOut
+└ NoticeMindHasWondered
+]
+)
+BodyScan/
+└ Explanation
+└ Head-Neck
+└ NoticeSomething?
+└ Neck-Waist
+└ NoticeSomething?
+└ Waist-Toes
+Other/
+└ AllowFreeMind
+Outro/
+└ NoticeSenses
+└ BodyMovement
+└ OpenEyes
+Other/
+└ NoticeHowYouFeel
+Outro/
+└ Goodbye
