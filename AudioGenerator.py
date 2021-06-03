@@ -32,6 +32,13 @@ def translate_structure(structure_path):
             group_number += 1
         # If it's a file
         elif line.startswith("└ "):
+            # If there's a minimum time
+            if "*" in line:
+                pos = line.index("*")
+                min_time = line[pos - 1: pos + 3]
+                line = line.replace(min_time, "")
+            else:
+                min_time = ""
             # If it repeats (X3)
             if "X" in line:
                 times = line.split("X")[1]
@@ -45,12 +52,12 @@ def translate_structure(structure_path):
                 # If the line is part of a group
                 if in_group:
                     if len(groups) <= group_number:
-                        groups.append(blocks_path + folder + file + "/\n")
+                        groups.append(blocks_path + folder + file + "/" + min_time + "\n")
                     else:
-                        groups[group_number] += blocks_path + folder + file + "/\n"
+                        groups[group_number] += blocks_path + folder + file + "/" + min_time + "\n"
                 # If the line is not part of a group
                 else:
-                    output += blocks_path + folder + file + "/\n"
+                    output += blocks_path + folder + file + "/" + min_time + "\n"
     # Close the file
     f.close()
     # Return the result as a list
@@ -78,14 +85,22 @@ def merge_audio_files(input_files, output_name):
 def create_audio_paths():
     audio_paths = []
     for line in translate_structure("Structure.txt"):
+        # If there's a minimum time
+        if "*" in line:
+            pos = line.index("*")
+            min_time = line[pos - 1: pos + 3]
+            line = line.replace(min_time, "")
+        else:
+            min_time = ""
         wav_file = line + random.choice(os.listdir(line))
         while (wav_file in audio_paths) or (".DS_Store" in wav_file):
             wav_file = line + random.choice(os.listdir(line))
         else:
-            audio_paths.append(wav_file)
+            audio_paths.append(wav_file + min_time)
     return audio_paths
 
 
 # Run the methods
-merge_audio_files(create_audio_paths(), "Audio")
-print(translate_structure("Structure.txt"))
+# merge_audio_files(create_audio_paths(), "Audio")
+# print(translate_structure("Structure.txt"))
+print(create_audio_paths())

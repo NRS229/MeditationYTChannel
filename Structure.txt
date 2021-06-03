@@ -1,11 +1,10 @@
 Intro/
 └ YoutubeIntro
-└ Welcome
-└ GetInPosition
-└ CloseEyes
-└ Breathe X3
-Other/
-└ NoticeHowYouFeel
+└ Welcome *15
+└ GetInPosition *15
+└ CloseEyes *15
+└ Breathe *20 X3
+└ NoticeHowYouFeel *20
 FocusedAttention/
 (
 [
@@ -38,7 +37,5 @@ Outro/
 └ NoticeSenses
 └ BodyMovement
 └ OpenEyes
-Other/
-└ NoticeHowYouFeel
 Outro/
 └ Goodbye
