@@ -1,44 +1,41 @@
 Intro/
-└ YoutubeIntro
-~ 4
-└ Welcome *15
-└ GetInPosition *15
-└ CloseEyes *15
-└ Breathe *20 X3
-└ NoticeHowYouFeel *20
+└ YoutubeIntro ~4
+└ Welcome %15
+└ GetInPosition %15
+└ CloseEyes %15
+└ Breathe %20 *3
+└ NoticeHowYouFeel %20
 FocusedAttention/
 (
 [
-└ CountBreaths *60
+└ CountBreaths %60
 └ NoticeMindHasWondered
-└ CountBreaths *60
+└ CountBreaths %60
 └ NoticeMindHasWondered
-└ CountBreaths *60
+└ CountBreaths %60
 └ NoticeMindHasWondered
 ]
 [
-└ NoticeBreathsInAndOut *60
+└ NoticeBreathsInAndOut %60
 └ NoticeMindHasWondered
-└ NoticeBreathsInAndOut *60
+└ NoticeBreathsInAndOut %60
 └ NoticeMindHasWondered
-└ NoticeBreathsInAndOut *60
+└ NoticeBreathsInAndOut %60
 └ NoticeMindHasWondered
 ]
 )
 BodyScan/
-└ Explanation
-~ 4
-└ Head-Neck *30
-└ NoticeSomething? *15
-└ Neck-Waist *30
-└ NoticeSomething? *15
-└ Waist-Toes *30
+└ Explanation ~4
+└ Head-Neck %30
+└ NoticeSomething? %15
+└ Neck-Waist %30
+└ NoticeSomething? %15
+└ Waist-Toes %30
 Other/
-└ AllowFreeMind *60
+└ AllowFreeMind %60
 Outro/
-└ NoticeSenses *30
-└ BodyMovement *30
-└ OpenEyes *30
+└ NoticeSenses %30
+└ BodyMovement %30
+└ OpenEyes %30
 Outro/
-└ Goodbye
-~ 4
+└ Goodbye ~4
