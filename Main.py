@@ -1,7 +1,7 @@
 import random
 import os
 import ffmpeg
-from pydub import AudioSegment
+from pydub import AudioSegment, effects
 
 
 def get_structure_without_groups(structure_path):
@@ -58,14 +58,14 @@ def get_paths_from_structure(structure_array):
     return output
 
 
-def get_paths_with_random_audio_files(paths_array, repetitions):
+def get_repetitions(structure_array):
     output = []
-    for i in range(len(paths_array)):
-        for rep in range(repetitions[i]):
-            wav_file = paths_array[i] + "/" + random.choice(os.listdir(paths_array[i]))
-            while (wav_file in output) or (".DS_Store" in wav_file):
-                wav_file = paths_array[i] + "/" + random.choice(os.listdir(paths_array[i]))
-            output.append(wav_file)
+    for line in structure_array:
+        if "*" in line:
+            # repetition is between "*" and " "
+            output.append(int((line.split("*"))[1].split(" ")[0]))
+        else:
+            output.append(1)
     return output
 
 
@@ -93,19 +93,18 @@ def get_minimum_times(structure_array, repetitions):
     return output
 
 
-def get_repetitions(structure_array):
+def get_paths_with_random_audio_files(paths_array, repetitions):
     output = []
-    for line in structure_array:
-        if "*" in line:
-            # repetition is between "*" and " "
-            output.append(int((line.split("*"))[1].split(" ")[0]))
-        else:
-            output.append(1)
+    for i in range(len(paths_array)):
+        for rep in range(repetitions[i]):
+            wav_file = paths_array[i] + "/" + random.choice(os.listdir(paths_array[i]))
+            while (wav_file in output) or (".DS_Store" in wav_file):
+                wav_file = paths_array[i] + "/" + random.choice(os.listdir(paths_array[i]))
+            output.append(wav_file)
     return output
 
 
-def merge_audio_files(output_name, paths, minimum_times, silences):
-    output_file = "Output/" + output_name + ".wav"
+def merge_audio_files(paths, minimum_times, silences):
     output = AudioSegment.empty()
     for i in range(len(paths)):
         audio = AudioSegment.from_wav(paths[i])
@@ -115,14 +114,21 @@ def merge_audio_files(output_name, paths, minimum_times, silences):
             silence_for_minimum_time = \
                 AudioSegment.silent(duration=(1000 * (int(minimum_times[i]) - audio.duration_seconds)))
             audio += silence_for_minimum_time
-        # if there's a silence after
+            # if there's a silence after
             silence_after = AudioSegment.silent(duration=(1000 * (int(silences[i]))))
             audio += silence_after
         output += audio
+    # Normalize the audio
+    normalized_output = effects.normalize(output)
     # Export the final output
-    output.export(output_file, format="wav")
+    return normalized_output
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+def add_background_music(audio, output_path, music_path):
+    music = AudioSegment.from_file(music_path, format="mp3")
+    music = (music - 20).fade_in(10000).fade_out(10000)
+    overlay = audio.overlay(music, position=0)
+    overlay.export(output_path, format="wav")
 
 
 def create_video(image_path, audio_path):
@@ -145,8 +151,12 @@ def main():
     minimum_times = get_minimum_times(structure_without_groups, repetitions)
     paths_with_random_audio_files = get_paths_with_random_audio_files(paths, repetitions)
 
-    # export as .wav file
-    merge_audio_files("audio", paths_with_random_audio_files, minimum_times, silences_after_audio)
+    # Create and save the main audio
+    audio = merge_audio_files(paths_with_random_audio_files, minimum_times, silences_after_audio)
+    # Add background music
+    add_background_music(audio, "Output/audio.wav", "Input/backgroundMusic.mp3")
+    # Generate the video
+    create_video("Input/image.jpg", "Output/audio.wav")
 
 
 if __name__ == "__main__":
