@@ -126,7 +126,7 @@ def merge_audio_files(paths, minimum_times, silences):
 
 def add_background_music(audio, output_path, music_path):
     music = AudioSegment.from_file(music_path, format="mp3")
-    music = (music - 20).fade_in(10000).fade_out(10000)
+    music = (music - 5).fade_in(10000).fade_out(10000)
     overlay = audio.overlay(music, position=0)
     overlay.export(output_path, format="wav")
 
