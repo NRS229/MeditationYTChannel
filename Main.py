@@ -1,7 +1,20 @@
+# -*- coding: utf-8 -*-
 import random
 import os
 import ffmpeg
+import datetime
 from pydub import AudioSegment, effects
+from Google import Create_Service
+from googleapiclient.http import MediaFileUpload
+from moviepy.editor import VideoFileClip
+
+CLIENT_SECRET_FILE = 'client_secret.json'
+API_NAME = 'youtube'
+API_VERSION = 'v3'
+SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+
+service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+
 
 
 def get_structure_without_groups(structure_path):
@@ -131,15 +144,54 @@ def add_background_music(audio, output_path, music_path):
     overlay.export(output_path, format="wav")
 
 
-def create_video(image_path, audio_path):
-    input_still = ffmpeg.input(image_path)
+def create_video(video_path, audio_path, output_path):
+    input_video = ffmpeg.input(video_path)
     input_audio = ffmpeg.input(audio_path)
     (
         ffmpeg
-        .concat(input_still, input_audio, v=1, a=1)
-        .output("Output/output.mp4")
+        .concat(input_video, input_audio, v=1, a=1)
+        .output(output_path)
         .run(overwrite_output=True)
     )
+
+
+def upload_youtube(video_path, thumbnail_path):
+    CLIENT_SECRET_FILE = 'client_secret.json'
+    API_NAME = 'youtube'
+    API_VERSION = 'v3'
+    SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
+
+    service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+
+    upload_date_time = datetime.datetime(2021, 6, 28, 12, 30, 0).isoformat() + '.000Z'
+
+    request_body = {
+        'snippet': {
+            'categoryId': 26,   # Howto & Style
+            'title': 'Title Testing',
+            'description': 'Hello World Description',
+            'tags': ['One', 'Two', 'Three']
+        },
+        'status': {
+            'privacyStatus': 'private',
+            'publishAt': upload_date_time,
+            'selfDeclaredMadeForKids': False,
+        },
+        'notifySubscribers': False
+    }
+
+    mediaFile = MediaFileUpload(video_path)
+
+    response_upload = service.videos().insert(
+        part='snippet,status',
+        body=request_body,
+        media_body=mediaFile
+    ).execute()
+
+    service.thumbnails().set(
+        videoId=response_upload.get('id'),
+        media_body=MediaFileUpload(thumbnail_path)
+    ).execute()
 
 
 def main():
@@ -156,7 +208,9 @@ def main():
     # Add background music
     add_background_music(audio, "Output/audio.wav", "Input/backgroundMusic.mp3")
     # Generate the video
-    create_video("Input/image.jpg", "Output/audio.wav")
+    create_video("Input/backgroundVideo.mov", "Output/audio.wav", "Output/output.mp4")
+    # Upload to youtube
+    upload_youtube("Output/output.mp4", "Input/thumbnail.jpg")
 
 
 if __name__ == "__main__":
