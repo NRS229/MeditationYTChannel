@@ -6,15 +6,20 @@ import datetime
 from pydub import AudioSegment, effects
 from Google import Create_Service
 from googleapiclient.http import MediaFileUpload
-from moviepy.editor import VideoFileClip
 
-CLIENT_SECRET_FILE = 'client_secret.json'
-API_NAME = 'youtube'
-API_VERSION = 'v3'
-SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
-
-service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-
+#Global variables
+structure_path          = "Structure.txt"
+background_music_path   = "Input/backgroundMusic.mp3"
+background_video_path   = "Input/backgroundVideo.mov"
+generated_voice_path    = "Output/generatedVoice.wav"
+video_to_upload_path    = "Output/output.mp4"
+thumbnail_image_path    = "Input/thumbnail.jpg"
+video_title             = "10 minute Guided Meditation - 1"
+video_category_number   = 22 # People & Blogs
+video_description       = "Take a moment and let this guided meditation help you relax"
+video_tags              = ['Meditation', 'Mindfulness', 'Relax', 'Stress', 'De-stress', 'Calm', 'Meditate', 'Float']
+video_made_for_kids     = False
+video_notify_subscribers= False
 
 
 def get_structure_without_groups(structure_path):
@@ -156,28 +161,28 @@ def create_video(video_path, audio_path, output_path):
 
 
 def upload_youtube(video_path, thumbnail_path):
-    CLIENT_SECRET_FILE = 'client_secret.json'
+    CLIENT_SECRET_FILE = 'SecretFiles/client_secret.json'
     API_NAME = 'youtube'
     API_VERSION = 'v3'
     SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
     service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
 
-    upload_date_time = datetime.datetime(2021, 6, 28, 12, 30, 0).isoformat() + '.000Z'
+    upload_date_time = datetime.datetime(2021, 6, 25, 12, 30, 0).isoformat() + '.000Z'
 
     request_body = {
         'snippet': {
-            'categoryId': 26,   # Howto & Style
-            'title': 'Title Testing',
-            'description': 'Hello World Description',
-            'tags': ['One', 'Two', 'Three']
+            'categoryId': video_category_number,
+            'title': video_title,
+            'description': video_description,
+            'tags': video_tags
         },
         'status': {
             'privacyStatus': 'private',
             'publishAt': upload_date_time,
-            'selfDeclaredMadeForKids': False,
+            'selfDeclaredMadeForKids': video_made_for_kids,
         },
-        'notifySubscribers': False
+        'notifySubscribers': video_notify_subscribers
     }
 
     mediaFile = MediaFileUpload(video_path)
@@ -195,7 +200,6 @@ def upload_youtube(video_path, thumbnail_path):
 
 
 def main():
-    structure_path = "Structure.txt"
     structure_without_groups = get_structure_without_groups(structure_path)
     paths = get_paths_from_structure(structure_without_groups)
     repetitions = get_repetitions(structure_without_groups)
@@ -206,11 +210,11 @@ def main():
     # Create and save the main audio
     audio = merge_audio_files(paths_with_random_audio_files, minimum_times, silences_after_audio)
     # Add background music
-    add_background_music(audio, "Output/audio.wav", "Input/backgroundMusic.mp3")
+    add_background_music(audio, generated_voice_path, background_music_path)
     # Generate the video
-    create_video("Input/backgroundVideo.mov", "Output/audio.wav", "Output/output.mp4")
+    create_video(background_video_path, generated_voice_path, video_to_upload_path)
     # Upload to youtube
-    upload_youtube("Output/output.mp4", "Input/thumbnail.jpg")
+    upload_youtube(video_to_upload_path, thumbnail_image_path)
 
 
 if __name__ == "__main__":
