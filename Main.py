@@ -3,6 +3,7 @@ import random
 import os
 import ffmpeg
 import datetime
+import subprocess
 from pydub import AudioSegment, effects
 from Google import Create_Service
 from googleapiclient.http import MediaFileUpload
@@ -14,7 +15,7 @@ background_video_path   = "Input/backgroundVideo.mov"
 generated_voice_path    = "Output/generatedVoice.wav"
 video_to_upload_path    = "Output/output.mp4"
 thumbnail_image_path    = "Input/thumbnail.jpg"
-video_title             = "10 minute Guided Meditation - 1"
+video_title             = "10 minute Guided Meditation - First"
 video_category_number   = 22 # People & Blogs
 video_description       = "Take a moment and let this guided meditation help you relax"
 video_tags              = ['Meditation', 'Mindfulness', 'Relax', 'Stress', 'De-stress', 'Calm', 'Meditate', 'Float']
@@ -152,12 +153,10 @@ def add_background_music(audio, output_path, music_path):
 def create_video(video_path, audio_path, output_path):
     input_video = ffmpeg.input(video_path)
     input_audio = ffmpeg.input(audio_path)
-    (
-        ffmpeg
-        .concat(input_video, input_audio, v=1, a=1)
-        .output(output_path)
-        .run(overwrite_output=True)
-    )
+    command = 'ffmpeg  -stream_loop -1 -i ' + video_path + ' -i ' +  audio_path + ' -shortest -map 0:v:0 -map 1:a:0 -y ' + output_path
+    subprocess.Popen(command.split()).wait()
+
+    # ( ffmpeg.concat(input_video, input_audio, v=1, a=1).output(output_path).run(overwrite_output=True) )
 
 
 def upload_youtube(video_path, thumbnail_path):
@@ -213,6 +212,7 @@ def main():
     add_background_music(audio, generated_voice_path, background_music_path)
     # Generate the video
     create_video(background_video_path, generated_voice_path, video_to_upload_path)
+
     # Upload to youtube
     upload_youtube(video_to_upload_path, thumbnail_image_path)
 

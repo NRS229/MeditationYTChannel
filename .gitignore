@@ -113,5 +113,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#Ignore the SecretFiles folder
+#Ignore the SecretFiles and Output folder
 SecretFiles/
+Output/
